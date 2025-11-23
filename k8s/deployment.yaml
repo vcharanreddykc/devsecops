@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: demo
-        image: demo-istio:latest
+        image: docker.io/vallapkc1995/demo-istio:latest
         ports:
         - containerPort: 5000
