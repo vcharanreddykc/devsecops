@@ -1,19 +1,28 @@
-
 name: CI
 on:
   push:
     branches: [ main ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Login to Docker
+
+      - name: Login to Docker Hub
         run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
-      - name: Build
+
+      - name: Build Image
         run: docker build -t ${{ secrets.DOCKER_USER }}/demo-istio:latest .
-      - name: Push
+
+      - name: Push Image
         run: docker push ${{ secrets.DOCKER_USER }}/demo-istio:latest
-      - name: Dispatch to GitOps
+
+      - name: Notify GitOps Repo (ArgoCD)
         run: |
-          curl -X POST -H "Authorization: token ${{ secrets.GITOPS_TOKEN }}"             -H "Accept: application/vnd.github+json"             https://api.github.com/repos/${{ secrets.GITOPS_REPO }}/dispatches             -d '{"event_type":"update-image","client_payload":{"image":"demo-istio:latest"}}'
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITOPS_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ secrets.GITOPS_REPO }}/dispatches \
+            -d '{"event_type":"update-image"}'
+
