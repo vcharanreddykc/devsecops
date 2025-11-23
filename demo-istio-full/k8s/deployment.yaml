@@ -1,0 +1,20 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-istio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-istio
+  template:
+    metadata:
+      labels:
+        app: demo-istio
+    spec:
+      containers:
+      - name: demo
+        image: demo-istio:latest
+        ports:
+        - containerPort: 5000
